@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: 'https://order-management-backend-5y85.onrender.com/api',
+  baseURL: 'https://order-management-system-production-92d0.up.railway.app/api',
 });
 
 // Attach JWT token to every request automatically
