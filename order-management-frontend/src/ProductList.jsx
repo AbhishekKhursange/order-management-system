@@ -39,6 +39,15 @@ function ProductList({ addToCart }) {
     setTimeout(() => setAddedMap((prev) => ({ ...prev, [product.id]: false })), 1500);
   };
 
+  // ✅ Smart image URL — works with both Cloudinary URLs and old local filenames
+  const getImageUrl = (imageName) => {
+    if (!imageName) return null;
+    // If it's already a full URL (Cloudinary), use directly
+    if (imageName.startsWith("http")) return imageName;
+    // Fallback for old local images
+    return `https://order-management-system-production-92d0.up.railway.app/images/${imageName}`;
+  };
+
   if (loading) {
     return (
       <div className="d-flex justify-content-center align-items-center" style={{ minHeight: "60vh" }}>
@@ -60,7 +69,6 @@ function ProductList({ addToCart }) {
           <p className="text-secondary mb-0 small">{filtered.length} items found</p>
         </div>
 
-        {/* Search */}
         <div className="d-flex gap-2 flex-wrap">
           <input
             type="text"
@@ -99,7 +107,6 @@ function ProductList({ addToCart }) {
                 style={{
                   borderRadius: "14px",
                   transition: "transform 0.2s, box-shadow 0.2s",
-                  cursor: "default",
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = "translateY(-4px)";
@@ -125,11 +132,12 @@ function ProductList({ addToCart }) {
                   className="d-flex align-items-center justify-content-center rounded-top-4"
                   style={{ height: "200px", background: "#f8fafc", overflow: "hidden" }}
                 >
-                  {product.imageName ? (
+                  {getImageUrl(product.imageName) ? (
                     <img
-                      src={`https://order-management-system-production-92d0.up.railway.app/images/${product.imageName}`}
+                      src={getImageUrl(product.imageName)}
                       alt={product.name}
                       style={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain", padding: "12px" }}
+                      onError={(e) => { e.target.style.display = "none"; }}
                     />
                   ) : (
                     <span style={{ fontSize: "3rem" }}>📦</span>
@@ -152,13 +160,11 @@ function ProductList({ addToCart }) {
                     {product.description}
                   </p>
 
-                  {/* Rating */}
                   <div className="d-flex align-items-center gap-1 mb-2">
                     <span className="text-warning">★</span>
                     <span className="small fw-semibold">{product.rating}</span>
                   </div>
 
-                  {/* Price row */}
                   <div className="d-flex align-items-center justify-content-between mb-3">
                     <span className="fw-bold fs-5" style={{ color: "#0ea5e9" }}>
                       ₹{product.price?.toLocaleString("en-IN")}
@@ -170,7 +176,6 @@ function ProductList({ addToCart }) {
                     )}
                   </div>
 
-                  {/* Add to Cart */}
                   <button
                     className="btn w-100 fw-semibold border-0"
                     style={{

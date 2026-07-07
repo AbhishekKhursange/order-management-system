@@ -1,9 +1,7 @@
 package com.abhi.rest.controller;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.abhi.rest.model.Product;
+import com.abhi.rest.service.CloudinaryService;
 import com.abhi.rest.service.ProductService;
 
 @RestController
@@ -32,6 +31,9 @@ public class ProductController {
 	
 	@Autowired
 	private ProductService productService;
+	
+	@Autowired
+    private CloudinaryService cloudinaryService;
 	
 //	@PostMapping
 //	public ResponseEntity<Product> createProduct(@RequestBody Product product) {
@@ -104,46 +106,31 @@ public class ProductController {
 	}
 	
 	@PostMapping("/upload")
-	public ResponseEntity<Product> uploadProduct(
-	        @RequestParam String name,
-	        @RequestParam String brand,
-	        @RequestParam Double price,
-	        @RequestParam Integer discount,
-	        @RequestParam Integer stock,
-	        @RequestParam String category,
-	        @RequestParam String description,
-	        @RequestParam Double rating,
-	        @RequestParam MultipartFile file
-	) throws IOException {
+    public ResponseEntity<Product> uploadProduct(
+            @RequestParam String name,
+            @RequestParam String brand,
+            @RequestParam Double price,
+            @RequestParam(defaultValue = "0") Integer discount,
+            @RequestParam Integer stock,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) String description,
+            @RequestParam(defaultValue = "0.0") Double rating,
+            @RequestParam MultipartFile file
+    ) throws IOException {
 
-	    String uploadDir = "uploads/products/";
+        // Upload image to Cloudinary — returns permanent URL
+        String imageUrl = cloudinaryService.uploadImage(file);
 
-	    // Generate unique filename
-	    String uniqueId = java.util.UUID.randomUUID().toString();
-	    String fileName = uniqueId + "_" + file.getOriginalFilename();
-
-	    Path uploadPath = Paths.get(uploadDir);
-
-	    // Create folder if not exists
-	    if (!Files.exists(uploadPath)) {
-	        Files.createDirectories(uploadPath);
-	    }
-
-	    // Save image
-	    Files.copy(file.getInputStream(), uploadPath.resolve(fileName));
-
-	    // Create product object
-	    Product product = new Product();
-
-	    product.setName(name);
-	    product.setBrand(brand);
-	    product.setPrice(price);
-	    product.setDiscount(discount);
-	    product.setStock(stock);
-	    product.setCategory(category);
-	    product.setDescription(description);
-	    product.setRating(rating);
-	    product.setImageName(fileName);
+        Product product = new Product();
+        product.setName(name);
+        product.setBrand(brand);
+        product.setPrice(price);
+        product.setDiscount(discount);
+        product.setStock(stock);
+        product.setCategory(category);
+        product.setDescription(description);
+        product.setRating(rating);
+        product.setImageName(imageUrl); // Store full Cloudinary URL
 
 	    // Save to database
 	    Product saved = productService.saveProduct(product);

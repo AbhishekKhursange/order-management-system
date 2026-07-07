@@ -77,22 +77,19 @@ public class ProductService {
 	public Product updateProductField(Long id, Product product) {
 		Optional<Product> optionalProduct = productRepository.findById(id);
 		if(optionalProduct.isPresent()) {
-			Product existProduct = optionalProduct.get();
+			Product existingProduct  = optionalProduct.get();
 			
-			if(product.getName() != null) {
-				existProduct.setName(product.getName());
-			}
+			existingProduct.setName(product.getName());
+	        existingProduct.setBrand(product.getBrand());
+	        existingProduct.setPrice(product.getPrice());
+	        existingProduct.setStock(product.getStock());
+	        existingProduct.setDiscount(product.getDiscount());
+	        existingProduct.setCategory(product.getCategory());
+	        existingProduct.setDescription(product.getDescription());
+	        existingProduct.setRating(product.getRating());
 			
-			if(product.getPrice() != null) {
-				existProduct.setPrice(product.getPrice());
-			}
-			
-			if(product.getStock() != null) {
-				existProduct.setStock(product.getStock());
-			}
-			
-			productRepository.save(existProduct);
-			return existProduct;
+			productRepository.save(existingProduct );
+			return existingProduct ;
 		}
 		throw new ProductNotFoundException("Product Not Found With Id " + id);
 	}
