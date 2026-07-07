@@ -48,33 +48,43 @@ function Navbar({ cartCount }) {
                   <NavLink className="nav-link px-3 position-relative" to="/cart">
                     🛍 Cart
                     {cartCount > 0 && (
-                      <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style={{ fontSize: "0.65rem" }}>
+                      <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                        style={{ fontSize: "0.65rem" }}>
                         {cartCount}
                       </span>
                     )}
                   </NavLink>
                 </li>
-
                 <li className="nav-item">
                   <NavLink className="nav-link px-3" to="/orders">My Orders</NavLink>
                 </li>
               </>
             )}
 
-            {/* Admin-only link */}
+            {/* Admin-only links */}
             {isAdmin() && (
-              <li className="nav-item">
-                <NavLink
-                  className="nav-link px-3"
-                  to="/upload-product"
-                  style={({ isActive }) => ({
-                    color: isActive ? "#fbbf24" : "#fbbf24aa",
-                    fontWeight: 600
-                  })}
-                >
-                  ⚙️ Upload Product
-                </NavLink>
-              </li>
+              <>
+                <li className="nav-item">
+                  <NavLink className="nav-link px-3"
+                    to="/admin"
+                    style={({ isActive }) => ({
+                      color: isActive ? "#fbbf24" : "#fbbf24aa",
+                      fontWeight: 600
+                    })}>
+                    ⚙️ Dashboard
+                  </NavLink>
+                </li>
+                <li className="nav-item">
+                  <NavLink className="nav-link px-3"
+                    to="/upload-product"
+                    style={({ isActive }) => ({
+                      color: isActive ? "#fbbf24" : "#fbbf24aa",
+                      fontWeight: 600
+                    })}>
+                    + Upload Product
+                  </NavLink>
+                </li>
+              </>
             )}
 
             {/* Auth buttons */}
@@ -86,7 +96,8 @@ function Navbar({ cartCount }) {
                   </NavLink>
                 </li>
                 <li className="nav-item ms-lg-1">
-                  <NavLink to="/login" className="btn btn-sm px-3" style={{ background: "#38bdf8", color: "#0f172a", fontWeight: 600 }}>
+                  <NavLink to="/login" className="btn btn-sm px-3"
+                    style={{ background: "#38bdf8", color: "#0f172a", fontWeight: 600 }}>
                     Login
                   </NavLink>
                 </li>
@@ -95,7 +106,12 @@ function Navbar({ cartCount }) {
               <li className="nav-item ms-lg-2 d-flex align-items-center gap-2">
                 <span className="text-light small d-none d-lg-inline">
                   👤 {user?.name}
-                  {isAdmin() && <span className="badge ms-1" style={{ background: "#fbbf24", color: "#0f172a", fontSize: "0.6rem" }}>ADMIN</span>}
+                  {isAdmin() && (
+                    <span className="badge ms-1"
+                      style={{ background: "#fbbf24", color: "#0f172a", fontSize: "0.6rem" }}>
+                      ADMIN
+                    </span>
+                  )}
                 </span>
                 <button className="btn btn-outline-danger btn-sm px-3" onClick={handleLogout}>
                   Logout

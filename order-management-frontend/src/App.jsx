@@ -10,6 +10,7 @@ import LoginForm from "./LoginForm";
 import UploadProduct from "./UploadProduct";
 import Orders from "./Orders";
 import ProtectedRoute from "./ProtectedRoute";
+import AdminDashboard from "./AdminDashboard";
 import { useAuth } from "./AuthContext";
 
 function App() {
@@ -49,7 +50,6 @@ function App() {
       window.location.href = "/login";
       return;
     }
-
     const order = {
       customer: { id: user.id },
       orderItems: cart.map((item) => ({
@@ -57,14 +57,13 @@ function App() {
         quantity: item.quantity,
       })),
     };
-
     API.post("/orders", order)
       .then(() => {
         alert("✅ Order placed successfully!");
         setCart([]);
       })
       .catch((err) => {
-        const msg = err.response?.data || "Failed to place order. Please try again.";
+        const msg = err.response?.data || "Failed to place order.";
         alert("❌ " + msg);
       });
   };
@@ -72,14 +71,12 @@ function App() {
   return (
     <>
       <Navbar cartCount={cart.length} />
-
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/products" element={<ProductList addToCart={addToCart} />} />
         <Route path="/register" element={<RegistrationForm />} />
         <Route path="/login" element={<LoginForm />} />
 
-        {/* Protected: must be logged in */}
         <Route path="/cart" element={
           <ProtectedRoute>
             <Cart cart={cart} placeOrder={placeOrder}
@@ -93,12 +90,19 @@ function App() {
           </ProtectedRoute>
         } />
 
-        {/* Protected: must be ADMIN */}
         <Route path="/upload-product" element={
           <ProtectedRoute adminOnly={true}>
             <UploadProduct />
           </ProtectedRoute>
         } />
+
+        {/* Admin Dashboard — admin only */}
+        <Route path="/admin" element={
+          <ProtectedRoute adminOnly={true}>
+            <AdminDashboard />
+          </ProtectedRoute>
+        } />
+
       </Routes>
     </>
   );

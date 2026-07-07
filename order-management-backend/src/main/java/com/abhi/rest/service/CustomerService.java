@@ -1,7 +1,6 @@
 package com.abhi.rest.service;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,7 +24,6 @@ public class CustomerService {
     @Autowired
     private JwtUtil jwtUtil;
 
-    // Register — hashes password, sets default role USER
     public Customer saveCustomer(Customer customer) {
         customer.setPassword(passwordEncoder.encode(customer.getPassword()));
         if (customer.getRole() == null) {
@@ -69,14 +67,13 @@ public class CustomerService {
     public Customer updateCustomer(Long id, Customer customer) {
         Customer existing = customerRepository.findById(id)
                 .orElseThrow(() -> new CustomerNotFoundException("Customer Not Found With Id " + id));
-
         existing.setName(customer.getName());
         existing.setEmail(customer.getEmail());
         existing.setPhone(customer.getPhone());
-
         return customerRepository.save(existing);
     }
 
+    // ✅ Supports partial updates including role change
     public Customer updateCustomerField(Long id, Customer customer) {
         Customer existing = customerRepository.findById(id)
                 .orElseThrow(() -> new CustomerNotFoundException("Customer Not Found With Id " + id));
@@ -84,11 +81,11 @@ public class CustomerService {
         if (customer.getName() != null) existing.setName(customer.getName());
         if (customer.getEmail() != null) existing.setEmail(customer.getEmail());
         if (customer.getPhone() != null) existing.setPhone(customer.getPhone());
+        if (customer.getRole() != null) existing.setRole(customer.getRole()); // ✅ role update
 
         return customerRepository.save(existing);
     }
 
-    // Login — verify BCrypt password and return JWT
     public AuthResponse login(String email, String password) {
         Customer customer = customerRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomerNotFoundException("Invalid email or password"));
