@@ -8,6 +8,7 @@ function PaymentModal({ total, onSuccess, onClose }) {
     });
     const [upiId, setUpiId] = useState("abhishekkhursange139@okaxis");
     const [bank, setBank] = useState("");
+    const [copied, setCopied] = useState(false);
 
     const formatCardNumber = (value) => {
         return value.replace(/\D/g, "").slice(0, 16).replace(/(.{4})/g, "$1 ").trim();
@@ -183,7 +184,7 @@ function PaymentModal({ total, onSuccess, onClose }) {
                                         <img
                                             src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=abhishekkhursange139@okaxis%26pn=ShopEasy%26am=${total}%26tn=ShopEasyOrder`}
                                             alt="UPI QR Code"
-                                            style={{ width: "100%", height: "100%", objectFit: "contain"}}
+                                            style={{ width: "100%", height: "100%", objectFit: "contain" }}
                                         />
                                     </div>
                                     <p className="text-secondary small mt-2 mb-0">
@@ -191,22 +192,43 @@ function PaymentModal({ total, onSuccess, onClose }) {
                                     </p>
                                 </div>
 
-                                <div className="text-center text-secondary small">— or enter UPI ID —</div>
+                                <div className="text-center text-secondary small">— or pay using UPI ID —</div>
 
                                 <div>
-                                    <label className="form-label fw-semibold small">UPI ID</label>
-                                    <input className="form-control" placeholder="yourname@upi"
-                                        value={upiId}
-                                        onChange={(e) => setUpiId(e.target.value)}
-                                        style={{ borderRadius: "8px" }} />
+                                    <label className="form-label fw-semibold small">Pay to UPI ID</label>
+                                    <div className="input-group">
+                                        <input
+                                            className="form-control"
+                                            value="abhishekkhursange139@okaxis"
+                                            readOnly
+                                            style={{
+                                                borderRadius: "8px 0 0 8px",
+                                                background: "#f8fafc",
+                                                color: "#0f172a",
+                                                fontWeight: 500,
+                                                cursor: "default"
+                                            }}
+                                        />
+                                        <button
+                                            className="btn btn-outline-secondary"
+                                            style={{ borderRadius: "0 8px 8px 0" }}
+                                            onClick={() => {
+                                                navigator.clipboard.writeText("abhishekkhursange139@okaxis");
+                                                setCopied(true);
+                                                setTimeout(() => setCopied(false), 2000);
+                                            }}
+                                        >
+                                            {copied ? "✅ Copied" : "📋 Copy"}
+                                        </button>
+                                    </div>
                                     <div className="text-secondary mt-1" style={{ fontSize: "0.75rem" }}>
-                                        e.g. mobile@paytm, name@gpay, id@ybl
+                                        Open any UPI app → Pay → Enter this UPI ID
                                     </div>
                                 </div>
 
                                 {/* UPI Apps */}
                                 <div>
-                                    <p className="fw-semibold small mb-2">Popular UPI Apps</p>
+                                    <p className="fw-semibold small mb-2">Open UPI App</p>
                                     <div className="d-flex gap-2 flex-wrap">
                                         {[
                                             { name: "GPay", emoji: "🟢" },
@@ -214,14 +236,21 @@ function PaymentModal({ total, onSuccess, onClose }) {
                                             { name: "Paytm", emoji: "🔵" },
                                             { name: "BHIM", emoji: "🟠" },
                                         ].map((app) => (
-                                            <button key={app.name}
-                                                onClick={() => setUpiId(`yourname@${app.name.toLowerCase()}`)}
-                                                className="btn btn-sm btn-outline-secondary"
-                                                style={{ borderRadius: "8px", fontSize: "0.75rem" }}>
+                                            <div key={app.name}
+                                                className="px-3 py-2 rounded-3 text-center"
+                                                style={{
+                                                    background: "#f1f5f9",
+                                                    fontSize: "0.8rem",
+                                                    fontWeight: 500,
+                                                    color: "#334155"
+                                                }}>
                                                 {app.emoji} {app.name}
-                                            </button>
+                                            </div>
                                         ))}
                                     </div>
+                                    <p className="text-secondary mt-2 mb-0" style={{ fontSize: "0.75rem" }}>
+                                        Open any app above → Scan QR or enter UPI ID → Pay ₹{total?.toLocaleString("en-IN")}
+                                    </p>
                                 </div>
                             </div>
                         )}
