@@ -175,18 +175,15 @@ function PaymentModal({ total, onSuccess, onClose }) {
                                 {/* QR Code */}
                                 <div className="text-center p-4 rounded-3" style={{ background: "#f8fafc" }}>
                                     <div style={{
-                                        width: "140px", height: "140px", margin: "0 auto",
+                                        width: "180px", height: "180px", margin: "0 auto",
                                         background: "white", border: "2px solid #e2e8f0",
-                                        borderRadius: "12px", display: "flex",
-                                        alignItems: "center", justifyContent: "center",
-                                        flexDirection: "column", gap: "8px"
+                                        borderRadius: "12px", overflow: "hidden", padding: "8px"
                                     }}>
                                         {/* Simulated QR pattern */}
-                                        <div style={{ fontSize: "3rem" }}>📱</div>
                                         <img
                                             src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=abhishekkhursange139@okaxis%26pn=ShopEasy%26am=${total}%26tn=ShopEasyOrder`}
                                             alt="UPI QR Code"
-                                            style={{ width: "140px", height: "140px", objectFit: "contain", borderRadius: "8px" }}
+                                            style={{ width: "100%", height: "100%", objectFit: "contain"}}
                                         />
                                     </div>
                                     <p className="text-secondary small mt-2 mb-0">
