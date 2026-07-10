@@ -73,14 +73,23 @@ function App() {
       <Navbar cartCount={cart.length} />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/products" element={<ProductList addToCart={addToCart} />} />
+
+        {/* ✅ Pass cart to ProductList so it knows what's already added */}
+        <Route path="/products" element={
+          <ProductList addToCart={addToCart} cart={cart} />
+        } />
+
         <Route path="/register" element={<RegistrationForm />} />
         <Route path="/login" element={<LoginForm />} />
 
         <Route path="/cart" element={
           <ProtectedRoute>
-            <Cart cart={cart} placeOrder={placeOrder}
-              removeFromCart={removeFromCart} updateQuantity={updateQuantity} />
+            <Cart
+              cart={cart}
+              placeOrder={placeOrder}
+              removeFromCart={removeFromCart}
+              updateQuantity={updateQuantity}
+            />
           </ProtectedRoute>
         } />
 
@@ -96,7 +105,6 @@ function App() {
           </ProtectedRoute>
         } />
 
-        {/* Admin Dashboard — admin only */}
         <Route path="/admin" element={
           <ProtectedRoute adminOnly={true}>
             <AdminDashboard />

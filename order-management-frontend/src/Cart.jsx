@@ -3,6 +3,13 @@ import { Link } from "react-router-dom";
 function Cart({ cart, placeOrder, removeFromCart, updateQuantity }) {
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
+  // ✅ Smart image URL — handles Cloudinary URLs and old local filenames
+  const getImageUrl = (imageName) => {
+    if (!imageName) return null;
+    if (imageName.startsWith("http")) return imageName; // Cloudinary URL
+    return `https://order-management-system-production-92d0.up.railway.app/images/${imageName}`;
+  };
+
   if (cart.length === 0) {
     return (
       <div className="container mt-5 text-center py-5">
@@ -30,11 +37,12 @@ function Cart({ cart, placeOrder, removeFromCart, updateQuantity }) {
                   {/* Image */}
                   <div className="rounded-3 overflow-hidden flex-shrink-0"
                     style={{ width: "80px", height: "80px", background: "#f1f5f9" }}>
-                    {item.imageName ? (
+                    {getImageUrl(item.imageName) ? (
                       <img
-                        src={`https://order-management-system-9b64.onrender.com/images/${item.imageName}`}
+                        src={getImageUrl(item.imageName)}
                         alt={item.name}
-                        style={{ width: "100%", height: "100%", objectFit: "contain" }}
+                        style={{ width: "100%", height: "100%", objectFit: "contain", padding: "4px" }}
+                        onError={(e) => { e.target.style.display = "none"; }}
                       />
                     ) : (
                       <div className="d-flex align-items-center justify-content-center h-100 text-secondary">📦</div>
@@ -45,7 +53,7 @@ function Cart({ cart, placeOrder, removeFromCart, updateQuantity }) {
                   <div className="flex-grow-1">
                     <h6 className="fw-bold mb-0">{item.name}</h6>
                     <small className="text-secondary">{item.brand}</small>
-                    <div className="fw-semibold text-primary mt-1">₹{item.price}</div>
+                    <div className="fw-semibold text-primary mt-1">₹{item.price?.toLocaleString("en-IN")}</div>
                   </div>
 
                   {/* Quantity controls */}
@@ -60,7 +68,7 @@ function Cart({ cart, placeOrder, removeFromCart, updateQuantity }) {
                   </div>
 
                   {/* Item total */}
-                  <div className="fw-bold text-end" style={{ minWidth: "80px" }}>
+                  <div className="fw-bold text-end" style={{ minWidth: "90px" }}>
                     ₹{(item.price * item.quantity).toLocaleString("en-IN")}
                   </div>
 
@@ -81,8 +89,26 @@ function Cart({ cart, placeOrder, removeFromCart, updateQuantity }) {
             <div className="card-body p-4">
               <h5 className="fw-bold mb-4">Order Summary</h5>
 
+              {/* ✅ Show each item with its subtotal */}
+              <div className="d-flex flex-column gap-2 mb-3">
+                {cart.map((item) => (
+                  <div key={item.id} className="d-flex justify-content-between align-items-center">
+                    <div className="text-secondary small" style={{ maxWidth: "160px" }}>
+                      {item.name}
+                      <span className="ms-1 text-muted">× {item.quantity}</span>
+                    </div>
+                    <span className="small fw-semibold">
+                      ₹{(item.price * item.quantity).toLocaleString("en-IN")}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              <hr />
+
+              {/* ✅ Shows unique item count, not total quantity */}
               <div className="d-flex justify-content-between mb-2 text-secondary">
-                <span>Subtotal ({cart.reduce((s, i) => s + i.quantity, 0)} items)</span>
+                <span>Subtotal ({cart.length} {cart.length === 1 ? "item" : "items"})</span>
                 <span>₹{total.toLocaleString("en-IN")}</span>
               </div>
               <div className="d-flex justify-content-between mb-2 text-secondary">
