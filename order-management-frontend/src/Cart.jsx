@@ -1,13 +1,21 @@
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import PaymentModal from "./PaymentModal";
 
 function Cart({ cart, placeOrder, removeFromCart, updateQuantity }) {
+  const [showPayment, setShowPayment] = useState(false);
+  const navigate = useNavigate();
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-  // ✅ Smart image URL — handles Cloudinary URLs and old local filenames
   const getImageUrl = (imageName) => {
     if (!imageName) return null;
-    if (imageName.startsWith("http")) return imageName; // Cloudinary URL
+    if (imageName.startsWith("http")) return imageName;
     return `https://order-management-system-production-92d0.up.railway.app/images/${imageName}`;
+  };
+
+  const handlePaymentSuccess = () => {
+    setShowPayment(false);
+    placeOrder(); // Place order after successful payment
   };
 
   if (cart.length === 0) {
@@ -53,7 +61,9 @@ function Cart({ cart, placeOrder, removeFromCart, updateQuantity }) {
                   <div className="flex-grow-1">
                     <h6 className="fw-bold mb-0">{item.name}</h6>
                     <small className="text-secondary">{item.brand}</small>
-                    <div className="fw-semibold text-primary mt-1">₹{item.price?.toLocaleString("en-IN")}</div>
+                    <div className="fw-semibold text-primary mt-1">
+                      ₹{item.price?.toLocaleString("en-IN")}
+                    </div>
                   </div>
 
                   {/* Quantity controls */}
@@ -61,7 +71,9 @@ function Cart({ cart, placeOrder, removeFromCart, updateQuantity }) {
                     <button className="btn btn-outline-secondary btn-sm"
                       style={{ width: "32px", height: "32px", padding: 0 }}
                       onClick={() => updateQuantity(item.id, -1)}>−</button>
-                    <span className="fw-bold" style={{ minWidth: "24px", textAlign: "center" }}>{item.quantity}</span>
+                    <span className="fw-bold" style={{ minWidth: "24px", textAlign: "center" }}>
+                      {item.quantity}
+                    </span>
                     <button className="btn btn-outline-secondary btn-sm"
                       style={{ width: "32px", height: "32px", padding: 0 }}
                       onClick={() => updateQuantity(item.id, 1)}>+</button>
@@ -74,8 +86,7 @@ function Cart({ cart, placeOrder, removeFromCart, updateQuantity }) {
 
                   {/* Remove */}
                   <button className="btn btn-sm text-danger border-0"
-                    onClick={() => removeFromCart(item.id)}
-                    title="Remove">🗑</button>
+                    onClick={() => removeFromCart(item.id)} title="Remove">🗑</button>
 
                 </div>
               </div>
@@ -89,7 +100,7 @@ function Cart({ cart, placeOrder, removeFromCart, updateQuantity }) {
             <div className="card-body p-4">
               <h5 className="fw-bold mb-4">Order Summary</h5>
 
-              {/* ✅ Show each item with its subtotal */}
+              {/* Each item breakdown */}
               <div className="d-flex flex-column gap-2 mb-3">
                 {cart.map((item) => (
                   <div key={item.id} className="d-flex justify-content-between align-items-center">
@@ -106,7 +117,6 @@ function Cart({ cart, placeOrder, removeFromCart, updateQuantity }) {
 
               <hr />
 
-              {/* ✅ Shows unique item count, not total quantity */}
               <div className="d-flex justify-content-between mb-2 text-secondary">
                 <span>Subtotal ({cart.length} {cart.length === 1 ? "item" : "items"})</span>
                 <span>₹{total.toLocaleString("en-IN")}</span>
@@ -123,16 +133,16 @@ function Cart({ cart, placeOrder, removeFromCart, updateQuantity }) {
                 <span style={{ color: "#0ea5e9" }}>₹{total.toLocaleString("en-IN")}</span>
               </div>
 
+              {/* ✅ Opens Payment Modal instead of directly placing order */}
               <button
                 className="btn w-100 py-2 fw-semibold text-white border-0"
                 style={{
                   background: "linear-gradient(135deg, #22c55e, #16a34a)",
-                  borderRadius: "8px",
-                  fontSize: "1rem"
+                  borderRadius: "8px", fontSize: "1rem"
                 }}
-                onClick={placeOrder}
+                onClick={() => setShowPayment(true)}
               >
-                ✅ Place Order
+                💳 Proceed to Payment
               </button>
 
               <Link to="/products" className="btn btn-outline-secondary w-100 mt-2 py-2"
@@ -143,8 +153,16 @@ function Cart({ cart, placeOrder, removeFromCart, updateQuantity }) {
             </div>
           </div>
         </div>
-
       </div>
+
+      {/* Payment Modal */}
+      {showPayment && (
+        <PaymentModal
+          total={total}
+          onSuccess={handlePaymentSuccess}
+          onClose={() => setShowPayment(false)}
+        />
+      )}
     </div>
   );
 }
