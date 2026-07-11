@@ -55,10 +55,11 @@ function PaymentModal({ total, onSuccess, onClose }) {
             position: "fixed", inset: 0,
             background: "rgba(0,0,0,0.6)",
             zIndex: 9999,
-            display: "flex", alignItems: "center", justifyContent: "center",
-            padding: "1rem"
+            display: "flex", alignItems: "flex-start", justifyContent: "center",
+            padding: "1rem",
+            overflowY: "auto"
         }}>
-            <div className="card border-0 shadow-lg w-100" style={{ maxWidth: "480px", borderRadius: "20px" }}>
+            <div className="card border-0 shadow-lg w-100" style={{ maxWidth: "480px", borderRadius: "20px", marginTop: "auto", marginBottom: "auto" }}>
                 <div className="card-body p-0">
 
                     {/* Header */}
@@ -227,31 +228,46 @@ function PaymentModal({ total, onSuccess, onClose }) {
                                 </div>
 
                                 {/* UPI Apps */}
-                                <div>
-                                    <p className="fw-semibold small mb-2">Open UPI App</p>
-                                    <div className="d-flex gap-2 flex-wrap">
-                                        {[
-                                            { name: "GPay", emoji: "🟢" },
-                                            { name: "PhonePe", emoji: "🟣" },
-                                            { name: "Paytm", emoji: "🔵" },
-                                            { name: "BHIM", emoji: "🟠" },
-                                        ].map((app) => (
-                                            <div key={app.name}
-                                                className="px-3 py-2 rounded-3 text-center"
-                                                style={{
-                                                    background: "#f1f5f9",
-                                                    fontSize: "0.8rem",
-                                                    fontWeight: 500,
-                                                    color: "#334155"
-                                                }}>
-                                                {app.emoji} {app.name}
-                                            </div>
-                                        ))}
-                                    </div>
-                                    <p className="text-secondary mt-2 mb-0" style={{ fontSize: "0.75rem" }}>
-                                        Open any app above → Scan QR or enter UPI ID → Pay ₹{total?.toLocaleString("en-IN")}
-                                    </p>
-                                </div>
+                                {/* UPI App Buttons — open deep links */}
+<div>
+  <p className="fw-semibold small mb-2">Open UPI App</p>
+  <div className="d-flex gap-2 flex-wrap">
+    {[
+      {
+        name: "GPay",
+        emoji: "🟢",
+        link: `tez://upi/pay?pa=abhishekkhursange139@okaxis&pn=ShopEasy&am=${total}&tn=ShopEasyOrder&cu=INR`
+      },
+      {
+        name: "PhonePe",
+        emoji: "🟣",
+        link: `phonepe://pay?pa=abhishekkhursange139@okaxis&pn=ShopEasy&am=${total}&tn=ShopEasyOrder&cu=INR`
+      },
+      {
+        name: "Paytm",
+        emoji: "🔵",
+        link: `paytmmp://pay?pa=abhishekkhursange139@okaxis&pn=ShopEasy&am=${total}&tn=ShopEasyOrder&cu=INR`
+      },
+      {
+        name: "BHIM",
+        emoji: "🟠",
+        link: `upi://pay?pa=abhishekkhursange139@okaxis&pn=ShopEasy&am=${total}&tn=ShopEasyOrder&cu=INR`
+      },
+    ].map((app) => (
+      <a
+        key={app.name}
+        href={app.link}
+        className="btn btn-outline-secondary btn-sm"
+        style={{ borderRadius: "8px", fontSize: "0.8rem", textDecoration: "none" }}
+      >
+        {app.emoji} {app.name}
+      </a>
+    ))}
+  </div>
+  <p className="text-secondary mt-2 mb-0" style={{ fontSize: "0.75rem" }}>
+    Tap an app to open it with payment pre-filled
+  </p>
+</div>
                             </div>
                         )}
 
