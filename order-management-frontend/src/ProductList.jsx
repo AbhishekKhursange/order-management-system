@@ -72,17 +72,17 @@ function ProductList({ addToCart, cart }) {
         </div>
 
         {/* Search with dropdown */}
-        <div className="d-flex flex-column gap-2" style={{ minWidth: "200px", width: "100%", maxWidth: "300px" }}>
+        <div className="d-flex gap-2 flex-wrap">
           <div className="position-relative">
             <input
               type="text"
-              className="form-control w-100"
+              className="form-control"
               placeholder="🔍 Search products..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               onFocus={() => setShowDropdown(true)}
               onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
-              style={{ borderRadius: "8px"}}
+              style={{ borderRadius: "8px", minWidth: "280px" }}
               autoComplete="off"
             />
 
@@ -161,10 +161,10 @@ function ProductList({ addToCart, cart }) {
             )}
           </div>
           <select
-            className="form-select w-100"
+            className="form-select"
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            style={{ borderRadius: "8px"}}
+            style={{ borderRadius: "8px", minWidth: "140px" }}
           >
             {categories.map((c) => (
               <option key={c}>{c}</option>
