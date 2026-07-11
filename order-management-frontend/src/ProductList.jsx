@@ -82,7 +82,7 @@ function ProductList({ addToCart, cart }) {
               onChange={(e) => setSearch(e.target.value)}
               onFocus={() => setShowDropdown(true)}
               onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
-              style={{ borderRadius: "8px", minWidth: "260px" }}
+              style={{ borderRadius: "8px", minWidth: "220px" }}
               autoComplete="off"
             />
 
