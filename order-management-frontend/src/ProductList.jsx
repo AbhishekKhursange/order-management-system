@@ -8,6 +8,7 @@ function ProductList({ addToCart, cart }) {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
+  const [showDropdown, setShowDropdown] = useState(false);
   const { isLoggedIn } = useAuth();
   const navigate = useNavigate();
 
@@ -23,7 +24,8 @@ function ProductList({ addToCart, cart }) {
   const filtered = products.filter((p) => {
     const matchSearch =
       p.name?.toLowerCase().includes(search.toLowerCase()) ||
-      p.brand?.toLowerCase().includes(search.toLowerCase());
+      p.brand?.toLowerCase().includes(search.toLowerCase()) ||
+      p.category?.toLowerCase().includes(search.toLowerCase());
     const matchCategory = category === "All" || p.category === category;
     return matchSearch && matchCategory;
   });
@@ -69,15 +71,95 @@ function ProductList({ addToCart, cart }) {
           <p className="text-secondary mb-0 small">{filtered.length} items found</p>
         </div>
 
+        {/* Search with dropdown */}
         <div className="d-flex gap-2 flex-wrap">
-          <input
-            type="text"
-            className="form-control"
-            placeholder="🔍 Search products..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            style={{ borderRadius: "8px", minWidth: "220px" }}
-          />
+          <div className="position-relative">
+            <input
+              type="text"
+              className="form-control"
+              placeholder="🔍 Search products..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              onFocus={() => setShowDropdown(true)}
+              onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
+              style={{ borderRadius: "8px", minWidth: "260px" }}
+              autoComplete="off"
+            />
+
+            {/* Dropdown suggestions */}
+            {showDropdown && search.trim().length > 0 && (
+              <div style={{
+                position: "absolute", top: "100%", left: 0, right: 0,
+                background: "white", border: "1px solid #e2e8f0",
+                borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
+                zIndex: 1000, maxHeight: "280px", overflowY: "auto",
+                marginTop: "4px"
+              }}>
+                {products
+                  .filter(p =>
+                    p.name?.toLowerCase().includes(search.toLowerCase()) ||
+                    p.brand?.toLowerCase().includes(search.toLowerCase()) ||
+                    p.category?.toLowerCase().includes(search.toLowerCase())
+                  )
+                  .slice(0, 6)
+                  .map(p => (
+                    <div
+                      key={p.id}
+                      className="d-flex align-items-center gap-3 px-3 py-2"
+                      style={{ cursor: "pointer", borderBottom: "1px solid #f1f5f9" }}
+                      onMouseEnter={(e) => e.currentTarget.style.background = "#f8fafc"}
+                      onMouseLeave={(e) => e.currentTarget.style.background = "white"}
+                      onClick={() => {
+                        setSearch(p.name);
+                        setShowDropdown(false);
+                      }}
+                    >
+                      {/* Product thumbnail */}
+                      <div style={{
+                        width: "40px", height: "40px", flexShrink: 0,
+                        background: "#f1f5f9", borderRadius: "8px",
+                        overflow: "hidden", display: "flex",
+                        alignItems: "center", justifyContent: "center"
+                      }}>
+                        {getImageUrl(p.imageName) ? (
+                          <img
+                            src={getImageUrl(p.imageName)}
+                            alt={p.name}
+                            style={{ width: "100%", height: "100%", objectFit: "contain" }}
+                            onError={(e) => { e.target.style.display = "none"; }}
+                          />
+                        ) : <span style={{ fontSize: "1.2rem" }}>📦</span>}
+                      </div>
+
+                      {/* Product info */}
+                      <div className="flex-grow-1">
+                        <div className="fw-semibold" style={{ fontSize: "0.875rem" }}>{p.name}</div>
+                        <div className="text-secondary" style={{ fontSize: "0.75rem" }}>
+                          {p.brand} • {p.category}
+                        </div>
+                      </div>
+
+                      {/* Price */}
+                      <div className="fw-bold" style={{ fontSize: "0.875rem", color: "#0ea5e9" }}>
+                        ₹{p.price?.toLocaleString("en-IN")}
+                      </div>
+                    </div>
+                  ))
+                }
+
+                {/* No results */}
+                {products.filter(p =>
+                  p.name?.toLowerCase().includes(search.toLowerCase()) ||
+                  p.brand?.toLowerCase().includes(search.toLowerCase()) ||
+                  p.category?.toLowerCase().includes(search.toLowerCase())
+                ).length === 0 && (
+                    <div className="text-center text-secondary py-3" style={{ fontSize: "0.875rem" }}>
+                      No products found for "{search}"
+                    </div>
+                  )}
+              </div>
+            )}
+          </div>
           <select
             className="form-select"
             value={category}
